@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Picker</title>
+    <title>Random Picker with Enhanced Display</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -14,8 +14,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
+            justify-content: space-between;
+            min-height: 100vh;
             color: #333;
         }
 
@@ -26,9 +26,30 @@
             margin-bottom: 20px;
         }
 
-        textarea {
+        .container {
+            display: flex;
+            justify-content: space-between;
             width: 80%;
-            max-width: 600px;
+            max-width: 900px;
+            margin-bottom: 10px;
+        }
+
+        .left-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            flex: 1;
+        }
+
+        .right-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            flex: 1;
+        }
+
+        textarea {
+            width: 100%;
             height: 150px;
             margin-bottom: 20px;
             font-size: 16px;
@@ -41,9 +62,19 @@
             background: rgba(255, 255, 255, 0.8);
         }
 
-        textarea:focus {
-            border-color: #74ebd5;
-            box-shadow: 0 0 10px rgba(116, 235, 213, 0.8);
+        .controls {
+            margin: 10px 0;
+        }
+
+        .controls input {
+            width: 60px;
+            padding: 8px;
+            font-size: 16px;
+            text-align: center;
+            border: 2px solid #ffffff;
+            border-radius: 8px;
+            margin-left: 10px;
+            outline: none;
         }
 
         button {
@@ -64,102 +95,177 @@
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
 
-        .employee {
-            font-size: 32px;
-            font-weight: bold;
+        .file-upload {
+            margin: 20px 0;
             text-align: center;
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .file-upload label {
+            display: inline-block;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: bold;
             color: #ffffff;
-            background: rgba(0, 0, 0, 0.7);
+            background: linear-gradient(to right, #ff512f, #dd2476);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .file-upload label:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        #totalItems {
+            font-size: 18px;
+            color: #ffffff;
+            margin: 10px 0;
+        }
+
+        .employee-list {
             margin-top: 20px;
-            padding: 20px 30px;
+            padding: 15px;
+            width: 100%;
+            max-width: 870px; /* Limit the width of the result box */
+            background: rgba(0, 0, 0, 0.7);
+            color: #ffffff;
             border-radius: 15px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            width: 60%;
-            max-width: 500px;
-            transition: transform 0.4s ease, opacity 0.4s ease;
+            text-align: left;
+            overflow-y: auto;
         }
 
-        .employee.hidden {
-            opacity: 0;
-            transform: scale(0.9);
+        .employee-item {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .employee.fade-in {
-            opacity: 1;
-            transform: scale(1);
+        .employee-item span {
+            margin-left: 10px;
+            font-size: 24px;
         }
 
         footer {
-            margin-top: 30px;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 14px;
-        }
-
-        footer a {
-            color: #ffffff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+            position: relative;
+            bottom: 0;
         }
     </style>
 </head>
 
 <body>
-    <h1>✨ Random Picker ✨</h1>
-    <textarea id="employeeInput" placeholder="Nhập danh sách item, mỗi dòng một giá trị..."></textarea>
-    <br>
-    <button onclick="pickRandomEmployee()">Pick Random</button>
-    <div class="employee hidden" id="employee"></div>
-    <footer>
-        Made with ❤️ by <a href="https://www.itblognote.com">thanhphatit</a>
-    </footer>
+    <h1>✨ Random Picker with Enhanced Display ✨</h1>
+    <div class="container">
+        <div class="left-section">
+            <textarea id="employeeInput" placeholder="Enter item list, one per line..."></textarea>
+            <div id="totalItems">Total items: 0</div>
+            <div class="controls">
+                <label for="quantity">Number of items to pick:</label>
+                <input type="number" id="quantity" value="1" min="1" />
+            </div>
+        </div>
+
+        <div class="right-section">
+            <div class="file-upload">
+                <input type="file" id="fileInput" accept=".txt, .csv, .xls, .xlsx" />
+                <label for="fileInput">📂 Upload file</label>
+            </div>
+            <button onclick="pickRandomEmployees()">Pick Random</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="employeeList" class="employee-list"></div>
+    </div>
 
     <script>
         let employees = [];
-        let pickedEmployees = []; // Mảng lưu trữ các item đã được chọn
+        let pickedEmployees = []; // Array to store picked items
 
-        // Cập nhật danh sách item mỗi khi người dùng nhập vào textarea
         function updateEmployees() {
             const input = document.getElementById('employeeInput').value.trim();
             employees = input.split('\n').map(line => line.trim()).filter(line => line !== "");
-            pickedEmployees = []; // Reset mảng pickedEmployees khi danh sách thay đổi
+            pickedEmployees = []; // Reset when list changes
+            document.getElementById('totalItems').textContent = `Total items: ${employees.length}`;
         }
 
-        // Chọn ngẫu nhiên một item và đảm bảo không lặp lại item đã chọn
-        function pickRandomEmployee() {
+        function readFile(file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const content = e.target.result;
+                const lines = content.split(/\r?\n/).map(line => line.trim()).filter(line => line !== "");
+                employees = [...employees, ...lines];
+                employees = [...new Set(employees)];
+                document.getElementById('employeeInput').value = employees.join('\n');
+                updateEmployees();
+            };
+            reader.readAsText(file);
+        }
+
+        document.getElementById('fileInput').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            readFile(file);
+        });
+
+        function pickRandomEmployees() {
+            const quantity = parseInt(document.getElementById('quantity').value, 10);
             if (employees.length === 0) {
-                alert("Danh sách item trống. Vui lòng nhập danh sách vào ô bên trên!");
+                alert("Item list is empty!");
+                return;
+            }
+            if (quantity <= 0 || isNaN(quantity)) {
+                alert("Quantity must be greater than 0!");
                 return;
             }
 
-            // Lọc ra những item chưa được chọn
             const availableEmployees = employees.filter(emp => !pickedEmployees.includes(emp));
-
             if (availableEmployees.length === 0) {
-                alert("Tất cả các item đã được chọn. Vui lòng làm mới trang để chọn lại!");
+                alert("All items have been picked!");
                 return;
             }
 
-            // Chọn một item ngẫu nhiên từ danh sách chưa chọn
-            const randomIndex = Math.floor(Math.random() * availableEmployees.length);
-            const randomEmployee = availableEmployees[randomIndex];
+            const selectedEmployees = [];
+            for (let i = 0; i < quantity; i++) {
+                if (availableEmployees.length === 0) break;
+                const randomIndex = Math.floor(Math.random() * availableEmployees.length);
+                const randomEmployee = availableEmployees.splice(randomIndex, 1)[0];
+                selectedEmployees.push(randomEmployee);
+                pickedEmployees.push(randomEmployee);
+            }
 
-            // Thêm item đã chọn vào mảng pickedEmployees
-            pickedEmployees.push(randomEmployee);
-
-            // Hiển thị item ngẫu nhiên
-            const employeeDiv = document.getElementById('employee');
-            employeeDiv.textContent = randomEmployee;
-            employeeDiv.classList.remove('hidden');
-            employeeDiv.classList.add('fade-in');
+            const employeeList = document.getElementById('employeeList');
+            employeeList.innerHTML = ""; // Reset list
+            selectedEmployees.forEach(emp => {
+                const div = document.createElement('div');
+                div.className = "employee-item";
+                div.innerHTML = `${emp} <span>🎉</span>`;
+                employeeList.appendChild(div);
+            });
         }
 
-        // Lắng nghe sự kiện nhập liệu trong textarea và cập nhật danh sách tự động
         document.getElementById('employeeInput').addEventListener('input', updateEmployees);
     </script>
+    <footer>
+        Made with ❤️ by <a href="https://www.itblognote.com" style="color: #fff;">thanhphatit</a>
+    </footer>
 </body>
 
 </html>
