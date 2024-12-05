@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random Picker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    textarea {
+      width: 80%;
+      height: 150px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      padding: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 5px;
+      cursor: pointer;
+    }
+    .employee {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Random Picker</h1>
+  <textarea id="employeeInput" placeholder="Nhập danh sách nhân viên, mỗi dòng một giá trị."></textarea>
+  <br>
+  <button onclick="pickRandomEmployee()">Pick Random</button>
+  <div class="employee" id="employee"></div>
+
+  <script>
+    let employees = [];
+    let pickedEmployees = []; // Mảng lưu trữ các nhân viên đã được chọn
+
+    // Cập nhật danh sách nhân viên mỗi khi người dùng nhập vào textarea
+    function updateEmployees() {
+      const input = document.getElementById('employeeInput').value.trim();
+      employees = input.split('\n').map(line => line.trim()).filter(line => line !== "");
+      pickedEmployees = []; // Reset mảng pickedEmployees khi danh sách thay đổi
+    }
+
+    // Chọn ngẫu nhiên một nhân viên và đảm bảo không lặp lại nhân viên đã chọn
+    function pickRandomEmployee() {
+      if (employees.length === 0) {
+        alert("Danh sách nhân viên trống. Vui lòng nhập danh sách vào ô bên trên!");
+        return;
+      }
+
+      // Lọc ra những nhân viên chưa được chọn
+      const availableEmployees = employees.filter(emp => !pickedEmployees.includes(emp));
+
+      if (availableEmployees.length === 0) {
+        alert("Tất cả các nhân viên đã được chọn. Vui lòng làm mới trang để chọn lại!");
+        return;
+      }
+
+      // Chọn một nhân viên ngẫu nhiên từ danh sách chưa chọn
+      const randomIndex = Math.floor(Math.random() * availableEmployees.length);
+      const randomEmployee = availableEmployees[randomIndex];
+
+      // Thêm nhân viên đã chọn vào mảng pickedEmployees
+      pickedEmployees.push(randomEmployee);
+
+      // Hiển thị nhân viên ngẫu nhiên
+      document.getElementById('employee').textContent = randomEmployee;
+    }
+
+    // Lắng nghe sự kiện nhập liệu trong textarea và cập nhật danh sách tự động
+    document.getElementById('employeeInput').addEventListener('input', updateEmployees);
+  </script>
+</body>
+</html>
