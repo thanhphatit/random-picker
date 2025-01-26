@@ -187,7 +187,7 @@
                 <input type="file" id="fileInput" accept=".txt, .csv, .xls, .xlsx" />
                 <label for="fileInput">📂 Upload file</label>
             </div>
-            <button onclick="pickRandomEmployees()">Pick Random</button>
+            <button onclick="startRandomDisplay()">Pick Random</button>
         </div>
     </div>
 
@@ -197,12 +197,13 @@
 
     <script>
         let employees = [];
-        let pickedEmployees = []; // Array to store picked items
+        let pickedEmployees = [];
+        let randomInterval;
 
         function updateEmployees() {
             const input = document.getElementById('employeeInput').value.trim();
             employees = input.split('\n').map(line => line.trim()).filter(line => line !== "");
-            pickedEmployees = []; // Reset when list changes
+            pickedEmployees = [];
             document.getElementById('totalItems').textContent = `Total items: ${employees.length}`;
         }
 
@@ -225,7 +226,7 @@
             readFile(file);
         });
 
-        function pickRandomEmployees() {
+        function startRandomDisplay() {
             const quantity = parseInt(document.getElementById('quantity').value, 10);
             if (employees.length === 0) {
                 alert("Item list is empty!");
@@ -236,6 +237,24 @@
                 return;
             }
 
+            const employeeList = document.getElementById('employeeList');
+            employeeList.innerHTML = `<div class="employee-item">🎲 Randomizing...</div>`;
+
+            // Start the random display
+            randomInterval = setInterval(() => {
+                const randomIndex = Math.floor(Math.random() * employees.length);
+                const randomEmployee = employees[randomIndex];
+                employeeList.innerHTML = `<div class="employee-item">${randomEmployee} <span>🔄</span></div>`;
+            }, 100);
+
+            // Stop random display and pick final result after 3 seconds
+            setTimeout(() => {
+                clearInterval(randomInterval);
+                pickRandomEmployees(quantity);
+            }, 3000);
+        }
+
+        function pickRandomEmployees(quantity) {
             const availableEmployees = employees.filter(emp => !pickedEmployees.includes(emp));
             if (availableEmployees.length === 0) {
                 alert("All items have been picked!");
